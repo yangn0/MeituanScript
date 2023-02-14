@@ -68,7 +68,9 @@ def submit(workShiftIds):
 def baoli():
     d=get_info()
     workShiftIds=list()
-    sheet_list=d['data']['workShiftTableInfo'][12:]
+    sheet_list=list()
+    sheet_list.append(d['data']['workShiftTableInfo'][0])
+    sheet_list+=d['data']['workShiftTableInfo'][7:]
     for i in sheet_list:
         for u in i['workShiftCells']:
             if u['status']['expired']==False:
@@ -82,6 +84,9 @@ def simple():
     while(1):
         while(1):
             d=get_info()
+            if d['success']=="error":
+                print(time.asctime( time.localtime(time.time()) ),"get_info",d['success'])
+                continue
             #print(time.asctime( time.localtime(time.time()) ),"get_info",d["success"])
             workShiftIds=list()
             sheet_list=list()
@@ -96,7 +101,10 @@ def simple():
                 break
         print("len(workShiftIds)",len(workShiftIds))
         submit_rtn=submit(workShiftIds[-30:])
-        print(time.asctime( time.localtime(time.time()) ),submit_rtn['success'],submit_rtn['msg'])
+        if d['success']=="error":
+            print(time.asctime( time.localtime(time.time()) ),"submit",d['success'])
+            continue
+        print(time.asctime( time.localtime(time.time()) ),submit,submit_rtn['msg'])
 if __name__ =="__main__":
     simple()
 input()

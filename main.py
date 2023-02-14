@@ -1,6 +1,8 @@
 import requests
 import json,time,traceback
 
+print("作者qq：792301982")
+
 submit_url = "https://health.meituan.com/api/sghospital/doctor/workShift/submitApply?yodaReady=h5"
 info_url = "https://health.meituan.com/api/sghospital/doctor/workShift/getTableInfo?startTime=2023-02-13&endTime=2023-02-19&yodaReady=h5"
 
@@ -82,7 +84,9 @@ def simple():
             d=get_info()
             #print(time.asctime( time.localtime(time.time()) ),"get_info",d["success"])
             workShiftIds=list()
-            sheet_list=d['data']['workShiftTableInfo'][12:]
+            sheet_list=list()
+            sheet_list.append(d['data']['workShiftTableInfo'][0])
+            sheet_list+=d['data']['workShiftTableInfo'][7:]
             for i in sheet_list:
                 for u in i['workShiftCells']:
                     if u['status']['expired']==False and u['status']['workShiftStatus']!=1:
@@ -94,5 +98,5 @@ def simple():
         submit_rtn=submit(workShiftIds[-30:])
         print(time.asctime( time.localtime(time.time()) ),submit_rtn['success'],submit_rtn['msg'])
 if __name__ =="__main__":
-    baoli()
+    simple()
 input()

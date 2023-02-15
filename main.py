@@ -1,10 +1,11 @@
 import requests
 import json,time,traceback
+import datetime
 
 print("作者qq：792301982")
 
 submit_url = "https://health.meituan.com/api/sghospital/doctor/workShift/submitApply?yodaReady=h5"
-info_url = "https://health.meituan.com/api/sghospital/doctor/workShift/getTableInfo?startTime=2023-02-13&endTime=2023-02-19&yodaReady=h5"
+info_url = "https://health.meituan.com/api/sghospital/doctor/workShift/getTableInfo?startTime=%s&endTime=%s&yodaReady=h5"
 
 # headers转换
 
@@ -43,10 +44,10 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 '''
 headers = trans(headers)
 
-def get_info():
+def get_info(starttime="",endtime=""):
     d=dict()
     try:
-        r=requests.get(info_url,headers=headers)
+        r=requests.get(info_url%(starttime,endtime),headers=headers)
         d=json.loads(r.text)
     except:
         d['success']="error"
@@ -88,6 +89,12 @@ def simple():
                 print(time.asctime( time.localtime(time.time()) ),"get_info",d['success'])
                 continue
             #print(time.asctime( time.localtime(time.time()) ),"get_info",d["success"])
+            endDate=d['data']['weekSelectionInfo']['endDate']
+            endDate=datetime.datetime.strptime(endDate, "%Y-%m-%d")
+            nextweek_startdate=(endDate + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+            nextweek_enddate=(endDate + datetime.timedelta(days=7)).strftime("%Y-%m-%d")
+            d_nextweek=get_info(nextweek_startdate,nextweek_enddate)
+
             workShiftIds=list()
             sheet_list=list()
             sheet_list.append(d['data']['workShiftTableInfo'][0])
@@ -96,7 +103,14 @@ def simple():
                 for u in i['workShiftCells']:
                     if u['status']['expired']==False and u['status']['workShiftStatus']!=1:
                         workShiftIds.append(u['workShiftId'])
-            #print(len(workShiftIds))
+            if(len(d_nextweek['data']['workShiftTableInfo'])!=0):
+                sheet_list.append(d_nextweek['data']['workShiftTableInfo'][0])
+                sheet_list+=d_nextweek['data']['workShiftTableInfo'][7:]
+                for i in sheet_list:
+                    for u in i['workShiftCells']:
+                        if u['status']['expired']==False and u['status']['workShiftStatus']!=1:
+                            workShiftIds.append(u['workShiftId'])
+
             if len(workShiftIds)!=0:
                 break
         print("len(workShiftIds)",len(workShiftIds))

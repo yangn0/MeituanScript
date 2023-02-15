@@ -27,7 +27,6 @@ Accept-Encoding: gzip, deflate, br
 Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7
 Cache-Control: no-cache
 Connection: keep-alive
-Cookie: _lxsdk_cuid=18645353081c8-08933fc4e72e4a-26021051-384000-18645353081c8; _lxsdk=18645353081c8-08933fc4e72e4a-26021051-384000-18645353081c8; e_b_id_352126=a2b85b6dd5c63b8d8649ebdfa2ac7065; WEBDFPID=0z0vvz2025005x11zyu5940879809zy8813546399v5979585z0wzwy4-1991558412669-1676198412669GASYSOCfd79fef3d01d5e9aadc18ccd4d0c95073864; token=pGBJla7R_0NAdtzqQn3V-m9hNweCHsRD8fM3ot0JTHO4AmwVOQoWKLbaQuJvO1Ty96d2JkgbUVt29tZ9K3JMVA; bizType=2; accountId=137049837; name=HJH1427101411; hospitalName=%25E9%259D%2592%25E5%25B2%259B%25E7%2599%25BE%25E5%25AF%25BF%25E4%25BA%2592%25E8%2581%2594%25E7%25BD%2591%25E5%258C%25BB%25E9%2599%25A2; accountType=2; acctId=10103; logan_session_token=ebcugeuja26qrsat1fe3; _lxsdk_s=1864651a493-34e-48f-153%7C%7C5
 Host: health.meituan.com
 M-APPKEY: fe_com.sankuai.medicine.fe.selfinquiry
 M-TRACEID: 9000862326025147867
@@ -42,7 +41,11 @@ Sec-Fetch-Site: same-origin
 token: pGBJla7R_0NAdtzqQn3V-m9hNweCHsRD8fM3ot0JTHO4AmwVOQoWKLbaQuJvO1Ty96d2JkgbUVt29tZ9K3JMVA
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36
 '''
+cookie="_lxsdk_cuid=18645353081c8-08933fc4e72e4a-26021051-384000-18645353081c8; _lxsdk=18645353081c8-08933fc4e72e4a-26021051-384000-18645353081c8; e_b_id_352126=a2b85b6dd5c63b8d8649ebdfa2ac7065; WEBDFPID=0z0vvz2025005x11zyu5940879809zy8813546399v5979585z0wzwy4-1991558412669-1676198412669GASYSOCfd79fef3d01d5e9aadc18ccd4d0c95073864; token=_oYUS_bFdTei6BozV-lwtPfd8hqox6WDdGPXxFlsRiTKbQ1SRqyouZ4pkur9gK-3EcpexMWjdHYngjnCCLpVvw; bizType=2; accountId=137049837; name=HJH1427101411; hospitalName=%25E9%259D%2592%25E5%25B2%259B%25E7%2599%25BE%25E5%25AF%25BF%25E4%25BA%2592%25E8%2581%2594%25E7%25BD%2591%25E5%258C%25BB%25E9%2599%25A2; accountType=2; acctId=10103; logan_session_token=6gd6ayudqos6rxwzt21w; _lxsdk_s=18654457767-15b-e48-e5f%7C%7C9"
+token="_oYUS_bFdTei6BozV-lwtPfd8hqox6WDdGPXxFlsRiTKbQ1SRqyouZ4pkur9gK-3EcpexMWjdHYngjnCCLpVvw"
 headers = trans(headers)
+headers["Cookie"]=cookie
+headers['token']=token
 
 def get_info(starttime="",endtime=""):
     d=dict()
@@ -85,8 +88,11 @@ def simple():
     while(1):
         while(1):
             d=get_info()
-            if d['success']=="error":
-                print(time.asctime( time.localtime(time.time()) ),"get_info",d['success'])
+            try:
+                if d['success']=="error":
+                    print(time.asctime( time.localtime(time.time()) ),"get_info",d['success'])
+                    continue
+            except:
                 continue
             #print(time.asctime( time.localtime(time.time()) ),"get_info",d["success"])
             endDate=d['data']['weekSelectionInfo']['endDate']

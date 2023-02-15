@@ -104,7 +104,7 @@ def simple():
         if d['success']=="error":
             print(time.asctime( time.localtime(time.time()) ),"submit",d['success'])
             continue
-        print(time.asctime( time.localtime(time.time()) ),submit,submit_rtn['msg'])
+        print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn)
 if __name__ =="__main__":
     simple()
 input()

@@ -8,8 +8,6 @@ submit_url = "https://health.meituan.com/api/sghospital/doctor/workShift/submitA
 info_url = "https://health.meituan.com/api/sghospital/doctor/workShift/getTableInfo?startTime=%s&endTime=%s&yodaReady=h5"
 
 # headers转换
-
-
 def trans(s):
     d = dict()
     s = s.split("\n")
@@ -80,7 +78,7 @@ def baoli():
             if u['status']['expired']==False:
                 workShiftIds.append(u['workShiftId'])
     while(1):
-        # 选班上限40个班次
+        # 选班上限40-个班次
         submit_rtn=submit(workShiftIds[-30:])
         print(time.asctime( time.localtime(time.time()) ),submit_rtn['success'],submit_rtn['msg'])
 
@@ -107,24 +105,24 @@ def simple():
             sheet_list+=d['data']['workShiftTableInfo'][7:]
             for i in sheet_list:
                 for u in i['workShiftCells']:
-                    if u['status']['expired']==False and u['status']['workShiftStatus']!=1:
+                    if u['status']['expired']==False and u['status']['workShiftStatus']!=1 and u['status']['applyStatus']!=1:
                         workShiftIds.append(u['workShiftId'])
+            #nextweek
             if(len(d_nextweek['data']['workShiftTableInfo'])!=0):
                 sheet_list.append(d_nextweek['data']['workShiftTableInfo'][0])
                 sheet_list+=d_nextweek['data']['workShiftTableInfo'][7:]
                 for i in sheet_list:
                     for u in i['workShiftCells']:
-                        if u['status']['expired']==False and u['status']['workShiftStatus']!=1:
+                        if u['status']['expired']==False and u['status']['workShiftStatus']!=1 and u['status']['applyStatus']!=1:
                             workShiftIds.append(u['workShiftId'])
-
             if len(workShiftIds)!=0:
                 break
-        print("len(workShiftIds)",len(workShiftIds))
+            
         submit_rtn=submit(workShiftIds[-30:])
-        if d['success']=="error":
-            print(time.asctime( time.localtime(time.time()) ),"submit",d['success'])
+        if submit_rtn['success']=="error":
+            print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn)
             continue
-        print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn)
+        print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn,"len(workShiftIds):%s"%len(workShiftIds))
+        
 if __name__ =="__main__":
     simple()
-input()

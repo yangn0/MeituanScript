@@ -48,7 +48,7 @@ headers['token']=token
 def get_info(starttime="",endtime=""):
     d=dict()
     try:
-        r=requests.get(info_url%(starttime,endtime),headers=headers)
+        r=requests.get(info_url%(starttime,endtime),headers=headers,timeout=1)
         d=json.loads(r.text)
     except:
         d['success']="error"
@@ -67,8 +67,8 @@ def submit(workShiftIds):
         traceback.print_exc()
     return d
 
-def baoli():
-    d=get_info()
+def baoli(startdate,endDate):
+    d=get_info(startdate,endDate)
     workShiftIds=list()
     sheet_list=list()
     sheet_list.append(d['data']['workShiftTableInfo'][0])
@@ -79,8 +79,9 @@ def baoli():
                 workShiftIds.append(u['workShiftId'])
     while(1):
         # 选班上限40-个班次
-        submit_rtn=submit(workShiftIds[-30:])
+        submit_rtn=submit(workShiftIds[-20:])
         print(time.asctime( time.localtime(time.time()) ),submit_rtn['success'],submit_rtn['msg'])
+        
 
 def simple():
     while(1):
@@ -133,3 +134,5 @@ def simple():
         
 if __name__ =="__main__":
     simple()
+    #baoli("2023-02-20","2023-02-26")
+    #baoli("2023-02-13","2023-02-19")

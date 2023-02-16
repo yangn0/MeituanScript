@@ -91,6 +91,7 @@ def simple():
                     print(time.asctime( time.localtime(time.time()) ),"get_info",d['success'])
                     continue
             except:
+                print(d)
                 continue
             #print(time.asctime( time.localtime(time.time()) ),"get_info",d["success"])
             endDate=d['data']['weekSelectionInfo']['endDate']
@@ -98,7 +99,13 @@ def simple():
             nextweek_startdate=(endDate + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
             nextweek_enddate=(endDate + datetime.timedelta(days=7)).strftime("%Y-%m-%d")
             d_nextweek=get_info(nextweek_startdate,nextweek_enddate)
-
+            try:
+                if d_nextweek['success']=="error":
+                    print(time.asctime( time.localtime(time.time()) ),"get_info",d_nextweek['success'])
+                    continue
+            except:
+                print(d_nextweek)
+                continue
             workShiftIds=list()
             sheet_list=list()
             sheet_list.append(d['data']['workShiftTableInfo'][0])

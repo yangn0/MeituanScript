@@ -50,6 +50,8 @@ def get_info(starttime="",endtime=""):
     try:
         r=requests.get(info_url%(starttime,endtime),headers=headers,timeout=1)
         d=json.loads(r.text)
+    except requests.exceptions.ReadTimeout:
+        d['success']="error"
     except:
         d['success']="error"
         traceback.print_exc()
@@ -79,7 +81,7 @@ def baoli(startdate,endDate):
                 workShiftIds.append(u['workShiftId'])
     while(1):
         # 选班上限40-个班次
-        submit_rtn=submit(workShiftIds[-20:])
+        submit_rtn=submit(workShiftIds[-24:])
         print(time.asctime( time.localtime(time.time()) ),submit_rtn['success'],submit_rtn['msg'])
         
 
@@ -117,6 +119,7 @@ def simple():
                         workShiftIds.append(u['workShiftId'])
             #nextweek
             if(len(d_nextweek['data']['workShiftTableInfo'])!=0):
+                sheet_list=list()
                 sheet_list.append(d_nextweek['data']['workShiftTableInfo'][0])
                 sheet_list+=d_nextweek['data']['workShiftTableInfo'][7:]
                 for i in sheet_list:
@@ -126,7 +129,7 @@ def simple():
             if len(workShiftIds)!=0:
                 break
             
-        submit_rtn=submit(workShiftIds[-30:])
+        submit_rtn=submit(workShiftIds[-20:])
         if submit_rtn['success']=="error":
             print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn)
             continue

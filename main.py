@@ -45,6 +45,13 @@ headers = trans(headers)
 headers["Cookie"]=cookie
 headers['token']=token
 
+def load_config():
+    print("加载配置文件")
+    with open("config.json","r",encoding="utf-8") as f:
+        config=json.load(f)
+    print(config)
+    return config
+    
 def get_info(starttime="",endtime=""):
     d=dict()
     try:
@@ -86,7 +93,7 @@ def baoli(startdate,endDate):
         print(time.asctime( time.localtime(time.time()) ),submit_rtn['msg'],len(workShiftIds))
         
 
-def simple():
+def simple(config):
     print("常规模式 正在扫单……")
     while(1):
         while(1):
@@ -111,23 +118,23 @@ def simple():
             except:
                 print(d_nextweek)
                 continue
+            
             workShiftIds=list()
-            sheet_list=list()
-            sheet_list.append(d['data']['workShiftTableInfo'][0])
-            sheet_list+=d['data']['workShiftTableInfo'][7:]
-            for i in sheet_list:
-                for u in i['workShiftCells']:
-                    if u['status']['expired']==False and u['status']['workShiftStatus']!=1 and u['status']['applyStatus']!=1:
+            
+            for i in config:
+                #nowweek
+                for u in config[i][0]:
+                    day=u-1
+                    day_info=d['data']['workShiftTableInfo'][int(i)]['workShiftCells'][day]
+                    if day_info['status']['expired']==False and day_info['status']['workShiftStatus']!=1 and day_info['status']['applyStatus']!=1:
                         workShiftIds.append(u['workShiftId'])
-            #nextweek
-            if(len(d_nextweek['data']['workShiftTableInfo'])!=0):
-                sheet_list=list()
-                sheet_list.append(d_nextweek['data']['workShiftTableInfo'][0])
-                sheet_list+=d_nextweek['data']['workShiftTableInfo'][7:]
-                for i in sheet_list:
-                    for u in i['workShiftCells']:
-                        if u['status']['expired']==False and u['status']['workShiftStatus']!=1 and u['status']['applyStatus']!=1:
-                            workShiftIds.append(u['workShiftId'])
+                #nextweek
+                for u in config[i][1]:
+                    day=u-1
+                    day_info=d_nextweek['data']['workShiftTableInfo'][int(i)]['workShiftCells'][day]
+                    if day_info['status']['expired']==False and day_info['status']['workShiftStatus']!=1 and day_info['status']['applyStatus']!=1:
+                        workShiftIds.append(u['workShiftId'])
+            
             if len(workShiftIds)!=0:
                 break
             
@@ -135,6 +142,7 @@ def simple():
         print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn,"len(workShiftIds):%s"%len(workShiftIds))
         
 if __name__ =="__main__":
-    simple()
+    config=load_config()
+    simple(config)
     #baoli("2023-02-20","2023-02-26")
     #baoli("2023-02-13","2023-02-19")

@@ -77,16 +77,17 @@ def baoli(startdate,endDate):
     sheet_list+=d['data']['workShiftTableInfo'][7:]
     for i in sheet_list:
         for u in i['workShiftCells']:
-            if u['status']['expired']==False and u['status']['applyStatus']!=1:
+            if u['status']['expired']==False and u['status']['workShiftStatus']!=1 and u['status']['applyStatus']!=1:
                 workShiftIds.append(u['workShiftId'])
                 
     while(1):
         # 选班上限每周30个班次
-        submit_rtn=submit(workShiftIds[-25:])
-        print(time.asctime( time.localtime(time.time()) ),submit_rtn['success'],submit_rtn['msg'],len(workShiftIds))
+        submit_rtn=submit(workShiftIds[-30:])
+        print(time.asctime( time.localtime(time.time()) ),submit_rtn['msg'],len(workShiftIds))
         
 
 def simple():
+    print("常规模式 正在扫单……")
     while(1):
         while(1):
             d=get_info()
@@ -131,9 +132,6 @@ def simple():
                 break
             
         submit_rtn=submit(workShiftIds[-15:])
-        if submit_rtn['success']=="error":
-            print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn)
-            continue
         print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn,"len(workShiftIds):%s"%len(workShiftIds))
         
 if __name__ =="__main__":

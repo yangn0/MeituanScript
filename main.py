@@ -127,13 +127,13 @@ def simple(config):
                     day=u-1
                     day_info=d['data']['workShiftTableInfo'][int(i)]['workShiftCells'][day]
                     if day_info['status']['expired']==False and day_info['status']['workShiftStatus']!=1 and day_info['status']['applyStatus']!=1:
-                        workShiftIds.append(u['workShiftId'])
+                        workShiftIds.append(day_info['workShiftId'])
                 #nextweek
                 for u in config[i][1]:
                     day=u-1
                     day_info=d_nextweek['data']['workShiftTableInfo'][int(i)]['workShiftCells'][day]
                     if day_info['status']['expired']==False and day_info['status']['workShiftStatus']!=1 and day_info['status']['applyStatus']!=1:
-                        workShiftIds.append(u['workShiftId'])
+                        workShiftIds.append(day_info['workShiftId'])
             
             if len(workShiftIds)!=0:
                 break

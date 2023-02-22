@@ -8,14 +8,14 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 
 print("作者qq：792301982")
-def Beijing_time():
-    r=requests.get('https://www.baidu.com',verify = False)
-    t=time.strptime(r.headers['date'],'%a, %d %b %Y %H:%M:%S GMT')
-    return time.mktime(t)+28800
+# def Beijing_time():
+#     r=requests.get('https://www.baidu.com',verify = False)
+#     t=time.strptime(r.headers['date'],'%a, %d %b %Y %H:%M:%S GMT')
+#     return time.mktime(t)+28800
 
-if(Beijing_time()-1676903619>=86400*2):
-    input("测试期已过，请联系作者。")
-    sys.exit()
+# if(Beijing_time()-1676903619>=86400*2):
+#     input("测试期已过，请联系作者。")
+#     sys.exit()
     
 #证书问题
 import urllib3

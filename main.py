@@ -145,49 +145,53 @@ def simple(config):
     print("常规模式 正在扫单……")
     while(1):
         while(1):
-            d=get_info()
             try:
-                if d['success']=="error":
-                    print(time.asctime( time.localtime(time.time()) ),"get_info",d['success'])
+                d=get_info()
+                try:
+                    if d['success']=="error":
+                        print(time.asctime( time.localtime(time.time()) ),"get_info",d['success'])
+                        continue
+                except:
+                    print(d)
                     continue
-            except:
-                print(d)
-                continue
-            #print(time.asctime( time.localtime(time.time()) ),"get_info",d["success"])
-            endDate=d['data']['weekSelectionInfo']['endDate']
-            endDate=datetime.datetime.strptime(endDate, "%Y-%m-%d")
-            nextweek_startdate=(endDate + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-            nextweek_enddate=(endDate + datetime.timedelta(days=7)).strftime("%Y-%m-%d")
-            d_nextweek=get_info(nextweek_startdate,nextweek_enddate)
-            try:
-                if d_nextweek['success']=="error":
-                    print(time.asctime( time.localtime(time.time()) ),"get_info",d_nextweek['success'])
+                #print(time.asctime( time.localtime(time.time()) ),"get_info",d["success"])
+                endDate=d['data']['weekSelectionInfo']['endDate']
+                endDate=datetime.datetime.strptime(endDate, "%Y-%m-%d")
+                nextweek_startdate=(endDate + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+                nextweek_enddate=(endDate + datetime.timedelta(days=7)).strftime("%Y-%m-%d")
+                d_nextweek=get_info(nextweek_startdate,nextweek_enddate)
+                try:
+                    if d_nextweek['success']=="error":
+                        print(time.asctime( time.localtime(time.time()) ),"get_info",d_nextweek['success'])
+                        continue
+                except:
+                    print(d_nextweek)
                     continue
-            except:
-                print(d_nextweek)
-                continue
-            
-            workShiftIds=list()
-            workShiftIds2=list()
-            
-            for i in config:
-                #nowweek
-                for u in config[i][0]:
-                    day=u-1
-                    day_info=d['data']['workShiftTableInfo'][int(i)]['workShiftCells'][day]
-                    if day_info['status']['expired']==False and day_info['status']['workShiftStatus']!=1 and day_info['status']['applyStatus']!=1:
-                        workShiftIds.append(day_info['workShiftId'])
-                #nextweek
-                if len(d_nextweek['data']['workShiftTableInfo'])==0:
-                    continue
-                for u in config[i][1]:
-                    day=u-1
-                    day_info=d_nextweek['data']['workShiftTableInfo'][int(i)]['workShiftCells'][day]
-                    if day_info['status']['expired']==False and day_info['status']['workShiftStatus']!=1 and day_info['status']['applyStatus']!=1:
-                        workShiftIds2.append(day_info['workShiftId'])
                 
-            if len(workShiftIds)!=0 or len(workShiftIds2)!=0:
-                break
+                workShiftIds=list()
+                workShiftIds2=list()
+                
+                for i in config:
+                    #nowweek
+                    for u in config[i][0]:
+                        day=u-1
+                        day_info=d['data']['workShiftTableInfo'][int(i)]['workShiftCells'][day]
+                        if day_info['status']['expired']==False and day_info['status']['workShiftStatus']!=1 and day_info['status']['applyStatus']!=1:
+                            workShiftIds.append(day_info['workShiftId'])
+                    #nextweek
+                    if len(d_nextweek['data']['workShiftTableInfo'])==0:
+                        continue
+                    for u in config[i][1]:
+                        day=u-1
+                        day_info=d_nextweek['data']['workShiftTableInfo'][int(i)]['workShiftCells'][day]
+                        if day_info['status']['expired']==False and day_info['status']['workShiftStatus']!=1 and day_info['status']['applyStatus']!=1:
+                            workShiftIds2.append(day_info['workShiftId'])
+                    
+                if len(workShiftIds)!=0 or len(workShiftIds2)!=0:
+                    break
+            except:
+                traceback.print_exc()
+                continue
         
         if len(workShiftIds)!=0:
             submit_rtn=submit(workShiftIds[-15:])

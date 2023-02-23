@@ -168,6 +168,7 @@ def simple(config):
                 continue
             
             workShiftIds=list()
+            workShiftIds2=list()
             
             for i in config:
                 #nowweek
@@ -183,13 +184,17 @@ def simple(config):
                     day=u-1
                     day_info=d_nextweek['data']['workShiftTableInfo'][int(i)]['workShiftCells'][day]
                     if day_info['status']['expired']==False and day_info['status']['workShiftStatus']!=1 and day_info['status']['applyStatus']!=1:
-                        workShiftIds.append(day_info['workShiftId'])
+                        workShiftIds2.append(day_info['workShiftId'])
                 
-            if len(workShiftIds)!=0:
+            if len(workShiftIds)!=0 or len(workShiftIds2)!=0:
                 break
-            
-        submit_rtn=submit(workShiftIds[-15:])
-        print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn,"len(workShiftIds):%s"%len(workShiftIds))
+        
+        if len(workShiftIds)!=0:
+            submit_rtn=submit(workShiftIds[-15:])
+            print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn,"len(workShiftIds):%s"%len(workShiftIds))
+        if len(workShiftIds2)!=0:
+            submit_rtn=submit(workShiftIds2[-15:])
+            print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn,"len(workShiftIds2):%s"%len(workShiftIds))
         
 if __name__ =="__main__":
     config=load_config()

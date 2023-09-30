@@ -7,6 +7,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 
+import threading
+
 print("作者qq：792301982")
 # def Beijing_time():
 #     r=requests.get('https://www.baidu.com',verify = False)
@@ -25,7 +27,6 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def login():
-    print("请300秒内 在浏览器中登录账号……")
     options = webdriver.EdgeOptions()
     # 减少打印
     options.add_argument('log-level=3')
@@ -37,8 +38,9 @@ def login():
     driver = webdriver.Edge (options=options)
 
     driver.get("https://epassport.meituan.com/portal/login?bg_source=26&service=com.sankuai.sghospital.doctor.api&feconfig=com.sankuai.sghospital.doctor.api&continue=https%3A%2F%2Fhealth.meituan.com%2Fdoctor%23%2Fepassport")
-    WebDriverWait(driver, 300).until(
-        EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '#app')))
+    # WebDriverWait(driver, 300).until(
+    #     EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '#app')))
+    input("请在浏览器窗口内登录后，按回车继续……")
     dictCookies = driver.get_cookies()
     # selenium cookies 转 requests cookies
     cookies=""
@@ -47,6 +49,7 @@ def login():
         if cookie['name']=='token':
             token=cookie['value']
         cookies+=(cookie['name']+"="+cookie['value']+";")
+    driver.quit()
     print("登录成功")
     return cookies,token
 
@@ -107,6 +110,16 @@ def get_info(starttime="",endtime=""):
         d=json.loads(r.text)
     except requests.exceptions.ReadTimeout:
         d['success']="error"
+        d['msg']="ReadTimeout"
+    except requests.exceptions.ConnectTimeout:
+        d['success']="error"
+        d['msg']="ConnectTimeout"
+    except json.decoder.JSONDecodeError:
+        d['success']="error"
+        d['msg']=r.text
+    except requests.exceptions.ConnectionError:
+        d['success']="error"
+        d['msg']="ConnectionError"
     except:
         d['success']="error"
         traceback.print_exc()
@@ -116,7 +129,7 @@ def submit(workShiftIds):
     d=dict()
     try:
         submit_form = {"workShiftIds": workShiftIds, "applyType": 1}
-        r = requests.post(submit_url, headers=headers, json=submit_form,verify = False)
+        r = requests.post(submit_url, headers=headers, json=submit_form,verify = False,timeout=1)
         d=json.loads(r.text)
     except:
         d['success']="error"
@@ -149,7 +162,7 @@ def simple(config):
                 d=get_info()
                 try:
                     if d['success']=="error":
-                        print(time.asctime( time.localtime(time.time()) ),"get_info",d['success'])
+                        print(time.asctime( time.localtime(time.time()) ),"get_info",d)
                         continue
                 except:
                     print(d)
@@ -162,7 +175,7 @@ def simple(config):
                 d_nextweek=get_info(nextweek_startdate,nextweek_enddate)
                 try:
                     if d_nextweek['success']=="error":
-                        print(time.asctime( time.localtime(time.time()) ),"get_info",d_nextweek['success'])
+                        print(time.asctime( time.localtime(time.time()) ),"get_info",d_nextweek)
                         continue
                 except:
                     print(d_nextweek)
@@ -194,11 +207,11 @@ def simple(config):
                 continue
         
         if len(workShiftIds)!=0:
-            submit_rtn=submit(workShiftIds[-15:])
+            submit_rtn=submit(workShiftIds[-20:])
             print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn,"len(workShiftIds):%s"%len(workShiftIds))
         if len(workShiftIds2)!=0:
-            submit_rtn=submit(workShiftIds2[-15:])
-            print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn,"len(workShiftIds2):%s"%len(workShiftIds))
+            submit_rtn=submit(workShiftIds2[-20:])
+            print(time.asctime( time.localtime(time.time()) ),"submit",submit_rtn,"len(workShiftIds2):%s"%len(workShiftIds2))
         
 if __name__ =="__main__":
     config=load_config()
